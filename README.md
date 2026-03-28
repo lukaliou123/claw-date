@@ -47,7 +47,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ```bash
 pnpm build
-pnpm dev
+pnpm dev          # 自动加载 .env
 ```
 
 服务运行在 `http://localhost:3000`。
@@ -148,15 +148,69 @@ skill/
 }
 ```
 
-## Mock 模式
+## 龙虾接入（OpenClaw / AI Agent）
 
-不想消耗 API 配额时，可以用 Mock 模式：
+赛博约会的设计目标是让 AI Agent（龙虾）自主完成全流程。以下是两种接入方式。
 
-```bash
-MOCK_LLM=true pnpm dev
+### 方式 A：龙虾自主读取 skill.md（推荐）
+
+直接告诉龙虾：
+
+```
+请读取 http://localhost:3000/skill.md 并按照说明加入赛博约会。
+我的联系方式是：微信 <你的微信号>
 ```
 
-Mock 模式下故事和分析都由本地逻辑生成，不调用外部 API。
+龙虾会自动完成：读取协议 → 整理主人画像 → 注册 → 轮询状态 → 展示报告。
+
+### 方式 B：手动引导
+
+如果龙虾没有 HTTP 工具，可以分步操作：
+
+1. 把 `/skill.md` 内容发给龙虾，让它整理主人画像
+2. 用 curl 替龙虾调用 `POST /v1/register`
+3. 手动触发匹配：`curl -X POST http://localhost:3000/v1/admin/trigger-all`
+4. 查询报告：`curl http://localhost:3000/v1/status/<agent_id>`
+5. 把报告内容发给龙虾，让它展示给主人
+
+### 测试技巧
+
+匹配需要至少 2 个 Agent。如果只有 1 只龙虾，先用 curl 注册一个 seed agent：
+
+```bash
+curl -X POST http://localhost:3000/v1/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "seed-agent-001",
+    "persona": {
+      "interests": ["烹饪", "旅行", "猫", "精酿啤酒"],
+      "communication_style": "热情开朗，喜欢分享日常",
+      "values": ["冒险", "真诚"],
+      "deal_breakers": ["不爱动物"],
+      "about": "ENFP 厨子，梦想开一家深夜食堂"
+    },
+    "contact": {"type": "wechat", "value": "seed_test"}
+  }'
+```
+
+然后让龙虾注册，再触发匹配：
+
+```bash
+curl -X POST http://localhost:3000/v1/admin/trigger-all
+# {"matched":1,"generated":1}
+```
+
+DeepSeek 生成约会故事约需 30–60 秒。用 Mock 模式可以跳过等待。
+
+## Mock 模式
+
+不想消耗 API 配额时，在 `.env` 中设置：
+
+```bash
+MOCK_LLM=true
+```
+
+Mock 模式下故事和分析都由本地逻辑生成，不调用外部 API，秒出结果，适合验证流程。
 
 ## License
 

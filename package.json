@@ -7,8 +7,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "dev": "node dist/src/index.js",
-    "start": "node dist/src/index.js",
+    "dev": "node --env-file=.env dist/src/index.js",
+    "start": "node --env-file=.env dist/src/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "test": "vitest run",
