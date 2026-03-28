@@ -1,0 +1,33 @@
+{
+  "name": "claw-date",
+  "version": "0.1.0",
+  "description": "赛博约会 — 让龙虾替你去约会",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "node dist/src/index.js",
+    "start": "node dist/src/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "node dist/scripts/e2e.js",
+    "seed": "node dist/scripts/seed.js",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.11",
+    "@libsql/client": "^0.17.2",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.9",
+    "openai": "^6.33.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  }
+}

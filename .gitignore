@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+.env
+*.db
+*.db-journal
+
+# 内部文档和参考项目不入库
+.doc/
+.ref_projects/
